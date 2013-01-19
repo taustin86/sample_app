@@ -5,12 +5,12 @@ describe "StaticPages" do
   let(:base_title) { "Ruby on Rails Tutorial Sample App" }
 
   describe "Home page" do
-
+=begin
     it "should have the h1 'Home'" do
       visit '/static_pages/home'
       page.should have_selector('h1', :text => 'Home')
     end
-
+=end
     it "should have the base title" do
       visit '/static_pages/home'
       page.should have_selector('title',
