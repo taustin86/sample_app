@@ -48,6 +48,10 @@ describe "Authentication" do
     describe "for non-signed-in users" do
       let(:user) { FactoryGirl.create(:user) }
     
+      it { should_not have_link('Users',    href: users_path) }
+      it { should_not have_link('Profile',  href: user_path(user)) }
+      it { should_not have_link('Settings', href: edit_user_path(user)) }
+
       describe "in the Users controller" do
 
         describe "visiting the edit page" do
@@ -57,6 +61,15 @@ describe "Authentication" do
           describe "after signing in" do
             before { sign_in user } 
             it { should have_selector('title', text: 'Edit user') }
+
+            describe "when signing in again" do
+              before do
+                delete signout_path
+                sign_in user
+              end
+
+              it { should have_selector('title', text: user.name) }
+            end
           end
         end
 
@@ -96,6 +109,33 @@ describe "Authentication" do
 
       describe "submitting a DELETE request to the Users#destroy action" do
         before { delete user_path(user) }
+        specify { response.should redirect_to(root_path) }
+      end
+    end
+
+    describe "as admin user" do
+      let(:admin) { FactoryGirl.create(:admin) }
+
+      before { sign_in admin }
+
+      describe "submitting a DELETE request to Users#destroy" do
+        it "should not delete itself" do
+          expect { delete user_path(admin) }.not_to change(User, :count)
+        end
+      end
+    end
+
+    describe "as signed-in user" do
+      let(:user) { FactoryGirl.create(:user) }
+      before { sign_in user }
+
+      describe "visiting the new page" do
+        before { visit new_user_path }
+        it { should_not have_selector('title', text: full_title('Sign Up'))}
+      end
+
+      describe "submitting to the create action" do
+        before { post users_path }
         specify { response.should redirect_to(root_path) }
       end
     end
