@@ -26,10 +26,19 @@ describe "StaticPages" do
         visit root_path
       end
 
+      it { should have_content("#{user.microposts.count} #{"micropost".pluralize(user.microposts.count)}") }
+
       it "should render the user's feed" do
         user.feed.each do |item|
           page.should have_selector("li##{item.id}", text: item.content)
         end
+      end
+
+      describe "pagination" do
+        before(:all)  { 30.times { FactoryGirl.create(:micropost, user: user) } }
+        after(:all)   { user.microposts.delete_all }  
+
+        it { should have_selector('div.pagination') }
       end
     end
   end

@@ -14,3 +14,12 @@
 //= require jquery_ujs
 //= require bootstrap
 //= require_tree .
+
+
+$(document).ready(function() {
+  $('#micropost_content').keyup(function() {
+    var value = $('input#rem_chars').val()
+    var newValue = value - 1
+    $('input#rem_chars').val(newValue)
+  })
+})
